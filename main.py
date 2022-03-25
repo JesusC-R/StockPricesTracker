@@ -26,8 +26,8 @@ data = response.json()
 
 yesterday_change = float(data['Time Series (Daily)'][yesterday]['4. close'])
 day_before_yesterday_change = float(data['Time Series (Daily)'][day_before_yesterday]['4. close'])
-difference_change = abs(round(yesterday_change - day_before_yesterday_change, 2))
 
+difference_change = abs(round(yesterday_change - day_before_yesterday_change, 2))
 percentage = round(difference_change / yesterday_change * 100, 2)
 
 
@@ -45,7 +45,7 @@ response.raise_for_status()
 data = response.json()
 n = data['articles']
 
-three_news = [i['description'] for i in n[:3]]
+five_news = [i for i in n[:5]]
 
 # ------------------------- SEND EMAIL ---------------------------- #
 
@@ -72,18 +72,20 @@ three_news = [i['description'] for i in n[:3]]
 account_sid = 'AC9e5950b7340450514dd89e85552031a6'
 auth_token = 'faa3399bd8e9d0e262d35848633a57b9'
 
+random_news = random.choice(five_news)
 if percentage < 5:
     client = Client(account_sid, auth_token)
-    message = client.messages.create(body=f'The value of TSLA stock has decreased {percentage}%.'
-                                          f'\n\n{random.choice(three_news)}',
+    message = client.messages.create(body=f'The value of TSLA stock has decreased ▼ {percentage}%.'
+                                          f'\n\n{random_news["description"]}\n\nsee more {random_news["url"]}',
                                      from_='+14159385765',
                                      to='+14246751559')
     print(message.status)
 
 else:
     client = Client(account_sid, auth_token)
-    message = client.messages.create(body=f'The value of the TSLA stock has increased {percentage}%.'
-                                          f'\n\n{random.choice(three_news)}',
+    message = client.messages.create(body=f'The value of the TSLA stock has increased ▲ {percentage}%.'
+                                          f'\n\n{random_news["description"]}\n\nsee more {random_news["url"]}',
                                      from_='+14159385765',
                                      to='+14246751559')
     print(message.status)
+    
